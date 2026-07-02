@@ -1,11 +1,16 @@
-import React from 'react';
-import { motion } from 'framer-motion';
-import { CheckCircle2 } from 'lucide-react';
+import React, { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { CheckCircle2, X } from 'lucide-react';
 import { AppleIcon, GooglePlayIcon } from './icons';
 
 const Hero = () => {
+  const [isVideoOpen, setIsVideoOpen] = useState(false);
+
   return (
     <section className="relative pt-32 pb-20 lg:pt-40 lg:pb-28 overflow-hidden">
+      {/* Non-blocking background prefetch for the video so it plays instantly when clicked */}
+      <link rel="prefetch" href="/video.mp4" as="video" type="video/mp4" />
+
       {/* Background decorations */}
       <div className="absolute top-0 right-0 -translate-y-1/4 translate-x-1/4 w-[800px] h-[800px] bg-emerald-50 rounded-full blur-3xl opacity-50 z-0"></div>
       <div className="absolute bottom-0 left-0 translate-y-1/4 -translate-x-1/4 w-[600px] h-[600px] bg-blue-50 rounded-full blur-3xl opacity-50 z-0"></div>
@@ -45,13 +50,13 @@ const Hero = () => {
                 <div className="absolute inset-0 h-full w-full bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:animate-[shimmer_1.5s_infinite]"></div>
               </a>
 
-              <button className="flex items-center gap-1.5 sm:gap-2 text-gray-600 hover:text-emerald-600 font-semibold transition-colors group text-sm sm:text-base shrink-0">
+              <button onClick={() => setIsVideoOpen(true)} className="flex items-center gap-1.5 sm:gap-2 text-gray-600 hover:text-emerald-600 font-semibold transition-colors group text-sm sm:text-base shrink-0">
                 <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-gray-50 border border-gray-200 flex items-center justify-center group-hover:bg-emerald-50 group-hover:border-emerald-200 transition-colors">
                   <svg className="w-3 h-3 sm:w-4 sm:h-4 ml-0.5" fill="currentColor" viewBox="0 0 24 24">
                     <path d="M8 5v14l11-7z" />
                   </svg>
                 </div>
-                See how it works
+                Watch Promo
               </button>
             </div>
 
@@ -112,6 +117,42 @@ const Hero = () => {
 
         </div>
       </div>
+
+      {/* Video Modal */}
+      <AnimatePresence>
+        {isVideoOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm"
+          >
+            <div className="absolute inset-0" onClick={() => setIsVideoOpen(false)}></div>
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              transition={{ delay: 0.1 }}
+              className="relative w-full max-w-5xl aspect-video bg-black rounded-2xl overflow-hidden shadow-2xl z-10"
+            >
+              <button 
+                onClick={() => setIsVideoOpen(false)}
+                className="absolute top-4 right-4 z-20 w-10 h-10 bg-white/20 hover:bg-white/40 text-white rounded-full flex items-center justify-center transition-colors backdrop-blur-md"
+              >
+                <X size={20} />
+              </button>
+              <video 
+                src="/video.mp4" 
+                className="w-full h-full object-contain"
+                controls
+                autoPlay
+              >
+                Your browser does not support the video tag.
+              </video>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </section>
   );
 };
